@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>Halacint</RootNamespace>
+    <StartupObject>Halacint.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SadConsole.Extended" Version="9.2.1" />
+    <PackageReference Include="SadConsole.Host.MonoGame" Version="9.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="settings\" />
+  </ItemGroup>
+
+</Project>
