@@ -15,32 +15,28 @@ namespace Halacint
 
         static void Main()
         {
-
-
             // Setup the engine and create the main window.
             Game.Create(default_width, default_height);
 
             // Hook the start event so we can add consoles to the system.
             Game.Instance.OnStart = Init;
 
-            Game.Instance.FrameUpdate += Update;
-
             // Start the game.
             Game.Instance.Run();
+
+
+            // Won't run until game window closes
             Game.Instance.Dispose();
         }
 
         static void Init()
         {
-            Game.Instance.Screen = new RootScreen();
+            var mainScreen = new RootScreen();
+
+            Game.Instance.Screen = mainScreen;
             Game.Instance.Screen.IsFocused = true;
 
             Game.Instance.DestroyDefaultStartingConsole();
-
-        }
-
-        static void Update(object sender, GameHost host)
-        {
 
         }
     }
