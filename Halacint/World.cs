@@ -24,5 +24,13 @@ namespace Halacint
             }
         }
 
+        public void MorphWorld()
+        {
+            foreach (var cell in cells)
+            {
+                cell.Background = new Color(Game.Instance.Random.Next(0, 255), Game.Instance.Random.Next(0, 255), Game.Instance.Random.Next(0, 255));
+            }
+        }
+
     }
 }

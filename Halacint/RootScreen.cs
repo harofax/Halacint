@@ -21,80 +21,40 @@ namespace Halacint
         public RootScreen()
         {
             ColoredGlyph playerGlyph = new ColoredGlyph(Color.Orange, Color.Transparent, '@');
-            player = new Entity( playerGlyph, 50);
-            player.Position = new Point(2, 2);
+            player = new Entity( playerGlyph, 50)
+            {
+                Position = new Point(2, 2)
+            };
 
 
             world = new World( 200, 200 );
             cam = new Camera(ref world, Game.Instance.ScreenCellsX, Game.Instance.ScreenCellsY);
             cam.Position = (2,2);
 
+            // view size, then world size
             cam.Resize(90, 30, 200, 200, false);
-
-
-            var borderParams = Border.BorderParameters.GetDefault()
-                .AddTitle("CAMERA", Color.Black, Color.White)
-                .ChangeBorderColors(Color.White, Color.Black)
-                .AddShadow();
-
-            Border border = new(cam, borderParams);
 
             cam.Target = player;
             cam.FollowTarget = true;
 
             entityManager = new Manager();
-            var worldEntity = new Manager();
-
-            //worldEntity.Add(player);
-            //world.SadComponents.Add(worldEntity);
-            //world.SadComponents.Add(entityManager);
             cam.SadComponents.Add(entityManager);
             entityManager.Add(player);
 
-            cam.SadComponents.Add(new SadConsole.Components.SurfaceComponentFollowTarget() { Target = player });
-
-
             player.IsVisible = true;
 
-            //world.IsVisible = true;
             cam.IsVisible = true;
 
-            debug_console = new DebugConsole(40, Game.Instance.ScreenCellsY - 4);
+            debug_console = new DebugConsole(40, Game.Instance.ScreenCellsY - 2)
+            {
+                Position = (1,1)
+            };
 
-            //var mainview = new ScreenSurface(60, 23);
-            //var subview = new ScreenSurface(mainview.Surface.GetSubSurface(new Rectangle(0,0,23,20)));
-
-            //_map = new ScreenSurface(Game.Instance.ScreenCellsX, Game.Instance.ScreenCellsY);
-            //_map.UseMouse = false;
-            //_map.FocusOnMouseClick = false;
-
-            //_debug = new Console(40, Game.Instance.ScreenCellsY - 2);
-            //_debug.Position = new Point(1, 1);
-            //_debug.FocusOnMouseClick = true;
-            //_debug.IsVisible = false;
-            //_debug.DefaultBackground = Color.AnsiBlack;
             
-            //Border.BorderParameters borderParams = Border.BorderParameters.GetDefault();
-            //borderParams.AddTitle("[ D E B U G ]");
-            //borderParams.DrawBorder = true;
-            //borderParams.ChangeBorderForegroundColor(Color.Yellow);
-            //borderParams.TitleBackground = Color.Yellow;
-            //borderParams.TitleForeground = Color.AnsiBlack;
-            //
-            //_debug.Print(2, 2, new ColoredString("yo"));
-            //
-            //var border = new Border(_debug, borderParams);
-
-            //FillBackground();
-
-            //Children.Add(world);
             Children.Add(cam);
             Children.Add(player);
-            //Children.Add(_debug);
-
+            Children.Add(debug_console);
             Children.MoveToTop(player);
-
-            //_controlledObject = new GameObject(new ColoredGlyph(Color.Yellow, Color.Black, 2), new Point(5, 5), world);
         }
 
         public override bool ProcessKeyboard(Keyboard keyboard)
@@ -144,9 +104,15 @@ namespace Halacint
                 //this.IsFocused = true;
                 //FillBackground();
                 //_debug.IsVisible = true;
-                cam.TargetPoint = cam.Surface.Area.Center;
+                //cam.TargetPoint = cam.Surface.Area.Center;
                 newPosition = player.Position;
                 handled = true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.K))
+            {
+                debug_console.ToggleDebugConsole();
+                return true;
             }
 
             if (handled)
@@ -169,7 +135,6 @@ namespace Halacint
         public override void Update(TimeSpan delta)
         {
             base.Update(delta);
-            cam.Update(delta);
         }
 
         public override void Render(TimeSpan delta)

@@ -13,10 +13,7 @@ namespace Halacint
         private IScreenObject _target;
         public IScreenObject Target
         {
-            get
-            {
-                return _target;
-            }
+            get => _target;
             set
             {
                 _target = value;
@@ -27,10 +24,7 @@ namespace Halacint
         private Point _targetPoint;
         public Point TargetPoint
         {
-            get
-            {
-                return _targetPoint;
-            }
+            get => _targetPoint;
             set
             {
                 _targetPoint = value;
@@ -41,7 +35,7 @@ namespace Halacint
         private bool _followTarget;
         public bool FollowTarget
         {
-            get { return _followTarget; }
+            get => _followTarget;
             set {
                 if (value == true && _followPoint == true) { FollowPoint = false; }
                 _followTarget = value; 
@@ -51,27 +45,19 @@ namespace Halacint
         private bool _followPoint;
         public bool FollowPoint
         {
-            get { return _followPoint; }
+            get => _followPoint;
             set {
                 if (value == true && _followTarget == true) { FollowTarget = false; }
                 _followPoint = value; 
             }
         }
 
-        public IScreenSurface displaySurface;
-
-        private World world;
+        public IScreenSurface DisplaySurface;
 
         public Camera(ref World world, int width, int height) : base(world.cells)
         {
             Resize(width, height, world.cells.Width, world.cells.Height, false);
-            this.world = world;
-            displaySurface = this;
-
-            
-
-            
-
+            DisplaySurface = this;
         }
 
         public void SetCameraPos()
@@ -87,25 +73,23 @@ namespace Halacint
 
             if (_followTarget)
             {
-                if (Target != null)
+                if (Target == null) return;
+                if (Target is Entity ent)
                 {
-                    if (Target is Entity ent)
-                    {
-                        displaySurface.Surface.View = displaySurface.Surface.View.WithCenter(ent.AbsolutePosition);
-                    } 
-                    else if (Target is IScreenSurface screenSurface)
-                    {
-                        displaySurface.Surface.View = displaySurface.Surface.View.WithCenter(screenSurface.UsePixelPositioning ? screenSurface.AbsolutePosition / displaySurface.FontSize : screenSurface.AbsolutePosition);
-                    }
-                    else
-                    {
-                        displaySurface.Surface.View = displaySurface.Surface.View.WithCenter(Target.Position);
-                    }
+                    DisplaySurface.Surface.View = DisplaySurface.Surface.View.WithCenter(ent.AbsolutePosition);
+                } 
+                else if (Target is IScreenSurface screenSurface)
+                {
+                    DisplaySurface.Surface.View = DisplaySurface.Surface.View.WithCenter(screenSurface.UsePixelPositioning ? screenSurface.AbsolutePosition / DisplaySurface.FontSize : screenSurface.AbsolutePosition);
+                }
+                else
+                {
+                    DisplaySurface.Surface.View = DisplaySurface.Surface.View.WithCenter(Target.Position);
                 }
             }
             else if (_followPoint)
             {
-                displaySurface.Surface.View = displaySurface.Surface.View.WithCenter(TargetPoint);
+                DisplaySurface.Surface.View = DisplaySurface.Surface.View.WithCenter(TargetPoint);
             }
         }
     }
