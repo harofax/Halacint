@@ -1,96 +1,84 @@
-﻿using SadConsole;
-using SadConsole.UI;
-using SadRogue.Primitives;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SadConsole;
+using SadConsole.Components;
 using SadConsole.Input;
+using SadConsole.UI;
+using SadConsole.UI.Controls;
+using SadRogue.Primitives;
 using Console = SadConsole.Console;
 
 namespace Halacint
 {
-    // public because of eventual mod support maybe idk
-    public class DebugConsole : Window
+    internal class DebugConsole : Console
     {
-        public int ViewableWidth, ViewableHeight;
+        private readonly ClassicConsoleKeyboardHandler _keyboardHandler;
 
-        public DebugConsole(int width, int height, int historyLength = 1000) : base(width, height, width, historyLength)
+        public DebugConsole(int width, int height, int bufferHeight) : base(width - 1, height, width - 1, bufferHeight)
         {
-            ViewableWidth = width;
-            ViewableHeight = height;
+            this.DefaultBackground = Color.AnsiBlack;
+            this.Clear();
 
-            FocusOnMouseClick = true;
-            
-            FocusedMode = FocusBehavior.Push;
-            Title = "[ D E B U G ]";
-            IsModalDefault = true;
-            
-        }
+            _keyboardHandler = new ClassicConsoleKeyboardHandler(">");
+            _keyboardHandler.EnterPressedAction = EnterPressedAction;
+            SadComponents.Add(_keyboardHandler);
 
-        protected override void DrawBorder()
-        {
-            Surface.DrawBox(new Rectangle(0, 0, ViewableWidth, ViewableHeight), 
-                ShapeParameters.CreateStyledBox((int[])ICellSurface.ConnectedLineThin, 
-                    new ColoredGlyph(Color.Orange, Color.AnsiBlack)));
-
-            // Draw title
-            string adjustedText = "";
-            int adjustedWidth = Width - 2;
-            TitleAreaLength = 0;
-            TitleAreaX = 0;
-
-            if (!string.IsNullOrEmpty(Title))
-            {
-                if (Title.Length > adjustedWidth)
-                    adjustedText = Title[..^(Title.Length - adjustedWidth)];
-                else
-                    adjustedText = Title;
-            }
-
-            if (!string.IsNullOrEmpty(adjustedText))
-            {
-                TitleAreaLength = adjustedText.Length;
-
-                if (TitleAlignment == HorizontalAlignment.Left)
-                    TitleAreaX = 1;
-                else if (TitleAlignment == HorizontalAlignment.Center)
-                    TitleAreaX = ((adjustedWidth - adjustedText.Length) / 2) + 1;
-                else
-                    TitleAreaX = Width - 1 - adjustedText.Length;
-
-                Surface.Print(TitleAreaX, TitleAreaY, adjustedText);
-            }
-
-            IsDirty = true;
-        }
-
-        public void ToggleDebugConsole()
-        {
-            if (IsVisible) HideDebugConsole();
-            else ShowDebugConsole();
-        }
-
-        public void ShowDebugConsole()
-        {
-            Show();
-            //DrawBorder();
-            //
-            //IsVisible = true;
-            //IsFocused = true;
-        }
-
-        public void HideDebugConsole()
-        {
-            Hide();
+            Cursor.IsVisible = true;
+            Cursor.IsEnabled = true;
         }
 
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
-            if (keyboard.IsKeyPressed(Keys.K))
-            {
-                HideDebugConsole();
-                return true;
-            }
+            _keyboardHandler.ProcessKeyboard(this, keyboard, out bool handled);
 
-            return false;
+            return handled;
         }
+
+        public void ClearText()
+        {
+            this.Clear();
+            Cursor.Position = new Point(0, 0);
+            _keyboardHandler.CursorLastY = 0;
+        }
+
+        public void EnterPressedAction(ClassicConsoleKeyboardHandler keyboardComponent, Cursor cursor, string value)
+        {
+            switch (value.ToLower())
+            {
+                case "help":
+                    Cursor.NewLine().
+                        Print("  HELP ").NewLine().
+                        Print("  =======================================").NewLine().NewLine().
+                        Print("  help      - Display this help info").NewLine().
+                        Print("  ver       - Display version info").NewLine().
+                        Print("  cls       - Clear the screen").NewLine().
+                        Print("  look      - Example adventure game cmd").NewLine().
+                        Print("  ").NewLine();
+                    break;
+                case "ver":
+                    Cursor.Print("v.0.0.0.0.1 Halacint").NewLine();
+                    break;
+                case "cls":
+                    ClearText();
+                    break;
+                case "look":
+                    // In this case we want word breaks to be nice when the cursor prints the next string.
+                    Cursor.DisableWordBreak = false;
+                    Cursor.Print("  Looking around you discover that you are in a dark and empty room. To your left there is a computer monitor in front of you and Visual Studio is opened, waiting for your next command.").NewLine();
+                    Cursor.DisableWordBreak = true;
+                    break;
+                case "exit":
+                    break;
+                default:
+                    Cursor.Print("  Unknown command").NewLine();
+                    break;
+            }
+        }
+
+        
     }
 }

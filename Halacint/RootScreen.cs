@@ -12,7 +12,7 @@ namespace Halacint
 {
     public class RootScreen : ScreenObject
     {
-        private DebugConsole debug_console;
+        private DebugWindow _debugWindow;
         private World world;
         private UIManager UIManager;
         private Manager entityManager;
@@ -54,13 +54,13 @@ namespace Halacint
             entityManager.Add(player);
 
             // -------- DEBUG CONSOLE ---------
-            debug_console = new DebugConsole(40, Game.Instance.ScreenCellsY - 10);
-            debug_console.Position = (1,1);
+            _debugWindow = new DebugWindow(40, Game.Instance.ScreenCellsY - 10);
+            _debugWindow.Position = (1,1);
 
             Children.Add(statusConsole);
             Children.Add(cam);
             Children.Add(player);
-            Children.Add(debug_console);
+            Children.Add(_debugWindow);
             Children.MoveToTop(statusConsole);
             //Children.MoveToTop(cam);
             Children.MoveToTop(player);
@@ -120,8 +120,8 @@ namespace Halacint
 
             if (keyboard.IsKeyPressed(Keys.K))
             {
-                debug_console.ShowDebugConsole();
-                //debug_console.ToggleDebugConsole();
+                _debugWindow.ShowDebugConsole();
+                //_debugWindow.ToggleDebugConsole();
                 return true;
             }
 
