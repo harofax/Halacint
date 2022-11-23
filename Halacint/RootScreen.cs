@@ -28,7 +28,7 @@ namespace Halacint
 
         public RootScreen()
         {
-            ColoredGlyph playerGlyph = new ColoredGlyph(Color.Orange, Color.Transparent, '@');
+            ColoredGlyph playerGlyph = new ColoredGlyph(Color.Yellow, Color.Transparent, '@');
             player = new Entity( playerGlyph, 50)
             {
                 Position = new Point(2, 2)
@@ -54,7 +54,7 @@ namespace Halacint
             entityManager.Add(player);
 
             // -------- DEBUG CONSOLE ---------
-            _debugWindow = new DebugWindow(40, Game.Instance.ScreenCellsY - 10);
+            _debugWindow = new DebugWindow(50, Game.Instance.ScreenCellsY - 10);
             _debugWindow.Position = (1,1);
 
             Children.Add(statusConsole);

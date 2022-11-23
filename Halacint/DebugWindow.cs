@@ -117,7 +117,6 @@ namespace Halacint
         public void ShowDebugConsole()
         {
             Show();
-            _log.IsFocused = true;
         }
 
         public void HideDebugConsole()

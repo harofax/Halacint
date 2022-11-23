@@ -10,7 +10,7 @@ namespace Halacint
         {
             cells = new CellSurface(width, height);
             GenerateWorld();
-            MorphWorld();
+            //MorphWorld();
         }
 
         private void GenerateWorld()
