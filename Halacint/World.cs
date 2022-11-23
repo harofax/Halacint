@@ -10,6 +10,7 @@ namespace Halacint
         {
             cells = new CellSurface(width, height);
             GenerateWorld();
+            MorphWorld();
         }
 
         private void GenerateWorld()
@@ -18,7 +19,7 @@ namespace Halacint
             {
                 for (int y = 0; y < cells.Height; y++)
                 {
-                    var cell_appearance = new ColoredGlyph(Color.SandyBrown, Color.SaddleBrown, 48 + 13);
+                    var cell_appearance = new ColoredGlyph(Color.SandyBrown, Color.SaddleBrown, '=');
                     cells[x, y].CopyAppearanceFrom(cell_appearance);
                 }
             }
@@ -28,7 +29,7 @@ namespace Halacint
         {
             foreach (var cell in cells)
             {
-                cell.Background = new Color(Game.Instance.Random.Next(0, 255), Game.Instance.Random.Next(0, 255), Game.Instance.Random.Next(0, 255));
+                cell.Background = new Color(Game.Instance.Random.Next(60, 150), Game.Instance.Random.Next(60, 150), Game.Instance.Random.Next(60, 155));
             }
         }
 

@@ -3,8 +3,10 @@ using SadConsole;
 using SadConsole.Entities;
 using SadConsole.Input;
 using SadConsole.UI;
+using SadConsole.UI.Controls;
 using SadRogue.Primitives;
 using Color = SadRogue.Primitives.Color;
+using Console = SadConsole.Console;
 
 namespace Halacint
 {
@@ -18,6 +20,12 @@ namespace Halacint
         private Camera cam;
         private Entity player;
 
+        public const int WORLD_SIZE_X = 200;
+        public const int WORLD_SIZE_Y = 200;
+
+        public const int CAM_SIZE_X = 90;
+        public const int CAM_SIZE_Y = 30;
+
         public RootScreen()
         {
             ColoredGlyph playerGlyph = new ColoredGlyph(Color.Orange, Color.Transparent, '@');
@@ -26,34 +34,35 @@ namespace Halacint
                 Position = new Point(2, 2)
             };
 
-
-            world = new World( 200, 200 );
-            cam = new Camera(ref world, Game.Instance.ScreenCellsX, Game.Instance.ScreenCellsY);
-            cam.Position = (2,2);
-
-            // view size, then world size
-            cam.Resize(90, 30, 200, 200, false);
-
+            // -------- WORLD ---------
+            world = new World( WORLD_SIZE_X, WORLD_SIZE_Y);
+            
+            // -------- CAMERA --------
+            cam = new Camera(ref world, CAM_SIZE_X, CAM_SIZE_Y);
+            cam.Position = (1,1);
             cam.Target = player;
             cam.FollowTarget = true;
+            
+
+            // -------- STATUS CONSOLE --------
+            Console statusConsole = new Console(Game.Instance.ScreenCellsX - CAM_SIZE_X - 3, 30);
+            statusConsole.Position = (CAM_SIZE_X + 2, 1);
+            statusConsole.FillWithRandomGarbage(255);
 
             entityManager = new Manager();
             cam.SadComponents.Add(entityManager);
             entityManager.Add(player);
 
-            player.IsVisible = true;
+            // -------- DEBUG CONSOLE ---------
+            debug_console = new DebugConsole(40, Game.Instance.ScreenCellsY - 10);
+            debug_console.Position = (1,1);
 
-            cam.IsVisible = true;
-
-            debug_console = new DebugConsole(40, Game.Instance.ScreenCellsY - 2)
-            {
-                Position = (1,1)
-            };
-
-            
+            Children.Add(statusConsole);
             Children.Add(cam);
             Children.Add(player);
             Children.Add(debug_console);
+            Children.MoveToTop(statusConsole);
+            //Children.MoveToTop(cam);
             Children.MoveToTop(player);
         }
 
@@ -111,15 +120,16 @@ namespace Halacint
 
             if (keyboard.IsKeyPressed(Keys.K))
             {
-                debug_console.ToggleDebugConsole();
+                debug_console.ShowDebugConsole();
+                //debug_console.ToggleDebugConsole();
                 return true;
             }
 
             if (handled)
             {
-                if (cam.Surface.Area.Contains(newPosition))
+                if (world.cells.Area.Contains(newPosition))
                 {
-                    cam.Surface.SetGlyph(player.Position.X, player.Position.Y, 250, Color.Purple);
+                    world.cells.SetGlyph(player.Position.X, player.Position.Y, 250, Color.Purple);
                     player.Position = newPosition;
                     //cam.Surface.View = cam.Surface.Area.WithCenter(newPosition);
                     //cam.displaySurface.Surface.View = cam.displaySurface.Surface.Area.WithCenter(newPosition);
@@ -137,10 +147,7 @@ namespace Halacint
             base.Update(delta);
         }
 
-        public override void Render(TimeSpan delta)
-        {
-            base.Render(delta);
-        }
+       
 
         //private void FillBackground()
         //{
