@@ -53,13 +53,13 @@ namespace Halacint
             _entityManager.Add(_player);
 
             // -------- DEBUG CONSOLE ---------
-            _debugWindow = new DebugWindow(50, Game.Instance.ScreenCellsY - 10);
-            _debugWindow.Position = (1, 1);
+            //_debugWindow = new DebugWindow(50, Game.Instance.ScreenCellsY - 10);
+            //_debugWindow.Position = (1, 1);
 
             Children.Add(statusConsole);
             Children.Add(_cam);
             Children.Add(_player);
-            Children.Add(_debugWindow);
+            //Children.Add(_debugWindow);
             Children.MoveToTop(statusConsole);
             //Children.MoveToTop(cam);
             Children.MoveToTop(_player);
@@ -72,6 +72,7 @@ namespace Halacint
 
             if (keyboard.IsKeyPressed(Keys.Up))
             {
+                GameLoop.Debug.Log("holy crap u walked up wtffffffffffff ", Color.Blue, Color.Red);
                 moveDir = Direction.Up;
                 playerMoved = true;
             }
@@ -88,6 +89,7 @@ namespace Halacint
             }
             else if (keyboard.IsKeyPressed(Keys.Right))
             {
+                GameLoop.Debug.Log("omg u walked right no friggin way", Color.Orange);
                 moveDir = Direction.Right;
                 playerMoved = true;
             }
@@ -108,7 +110,7 @@ namespace Halacint
 
             if (keyboard.IsKeyPressed(Keys.K))
             {
-                _debugWindow.ShowDebugConsole();
+                GameLoop.Debug.ShowDebugConsole();
                 //_debugWindow.ToggleDebugConsole();
                 return true;
             }

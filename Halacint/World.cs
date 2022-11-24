@@ -12,7 +12,7 @@ namespace Halacint
             cells = new CellSurface(width, height);
             walkable = new byte[width, height];
 
-            System.Console.WriteLine(walkable[1, 1]);
+            //GameLoop.Debug.Log("walkable?: " + walkable[2,2].ToString(), Color.Red);
 
             GenerateWorld();
             //MorphWorld();

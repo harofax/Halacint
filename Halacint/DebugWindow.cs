@@ -66,6 +66,13 @@ namespace Halacint
             else ShowDebugConsole();
         }
 
+        public void Log(string message, Color fgColor = default, Color bgColor = default)
+        {
+            ColoredString coloredMessage = new ColoredString(message, fgColor, bgColor);
+            _log.Cursor.Print(coloredMessage);
+            _log.Cursor.NewLine();
+        }
+
         public void ShowDebugConsole()
         {
             Show();

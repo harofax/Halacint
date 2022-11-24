@@ -8,10 +8,12 @@ using Console = SadConsole.Console;
 
 namespace Halacint
 {
-    public static class Program
+    public static class GameLoop
     {
         private static int default_width = 128;
         private static int default_height = 38;
+
+        public static DebugWindow Debug;
 
         static void Main()
         {
@@ -31,6 +33,7 @@ namespace Halacint
 
         static void Init()
         {
+            Debug = new DebugWindow(60, default_height, 1000);
             var mainScreen = new RootScreen();
 
             Game.Instance.Screen = mainScreen;
