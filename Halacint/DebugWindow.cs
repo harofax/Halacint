@@ -9,13 +9,12 @@ using Console = SadConsole.Console;
 
 namespace Halacint
 {
-    // public because of eventual mod support maybe idk
     public class DebugWindow : Window
     {
         public int ScrollOffset { get; set; } = 0;
 
 
-        public readonly SadConsole.UI.Controls.ScrollBar _scrollBar;
+        private readonly SadConsole.UI.Controls.ScrollBar _scrollBar;
 
 
         private readonly DebugLog _log;

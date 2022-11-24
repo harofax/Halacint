@@ -66,7 +66,6 @@ namespace Halacint
                         Print("  help      - Display this help info").NewLine().
                         Print("  ver       - Display version info").NewLine().
                         Print("  cls       - Clear the screen").NewLine().
-                        Print("  look      - Example adventure game cmd").NewLine().
                         Print("  ").NewLine();
                     break;
                 case "ver":
@@ -75,16 +74,12 @@ namespace Halacint
                 case "cls":
                     ClearText();
                     break;
-                case "look":
-                    // In this case we want word breaks to be nice when the cursor prints the next string.
-                    Cursor.DisableWordBreak = false;
-                    Cursor.Print("  Looking around you discover that you are in a dark and empty room. To your left there is a computer monitor in front of you and Visual Studio is opened, waiting for your next command.").NewLine();
-                    Cursor.DisableWordBreak = true;
-                    break;
                 case "exit":
+                    ClearText();
+                    Parent.IsVisible = false;
                     break;
                 default:
-                    Cursor.Print("  Unknown command").NewLine();
+                    Cursor.Print(value + " is an unknown command").NewLine();
                     break;
             }
         }
