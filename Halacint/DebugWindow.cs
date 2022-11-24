@@ -12,21 +12,17 @@ namespace Halacint
     // public because of eventual mod support maybe idk
     public class DebugWindow : Window
     {
-        public int ViewableWidth, ViewableHeight;
-
-        private int i = 0;
-
         public int ScrollOffset { get; set; } = 0;
 
 
         public readonly SadConsole.UI.Controls.ScrollBar _scrollBar;
 
 
-        private readonly DebugConsole _log;
+        private readonly DebugLog _log;
 
         public DebugWindow(int width, int height, int historyLength = 1000) : base(width, height)
         {
-            _log = new DebugConsole(width-2, height-2, historyLength);
+            _log = new DebugLog(width-2, height-2, historyLength);
             _log.Position = (1, 1);
 
             _scrollBar = new SadConsole.UI.Controls.ScrollBar(Orientation.Vertical, height - 2);
@@ -44,69 +40,26 @@ namespace Halacint
 
             _log.IsFocused = true;
 
-            //ViewBorder viewBorder = new ViewBorder(width, height);
-            //viewBorder.Position = (-1, -1);
-            //Children.Add(viewBorder);
+            _log.ConsoleCleared += Log_ResetScrollbar;
 
-            ViewableWidth = width;
-            ViewableHeight = height;
-
-            //FocusedMode = FocusBehavior.Push;
             Title = "[ D E B U G ]";
             IsModalDefault = true;
 
             Children.Add(_log);
             Children.MoveToTop(_log);
-            
-            //Children.MoveToTop(_controlsContainer);
         }
 
-        private void OnMouseEnter(object sender, MouseScreenObjectState e)
+        private void Log_ResetScrollbar()
         {
-            Title = "WOWOWOWOWO";
-            IsDirty = true;
+            _scrollBar.Maximum = 0;
+            _scrollBar.Value = 0;
+            _scrollBar.IsEnabled = false;
         }
 
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
         {
             _log.View = new Rectangle(0, _scrollBar.Value, _log.Width, _log.ViewHeight);
         }
-
-
-        //protected override void DrawBorder()
-        //{
-        //    // override the border drawing, since we only wanna draw the title,
-        //    // the border we make ourselves with ViewBorder
-        //
-        //    string adjustedText = "";
-        //    int adjustedWidth = Width - 2;
-        //    TitleAreaLength = 0;
-        //    TitleAreaX = 0;
-        //
-        //    if (!string.IsNullOrEmpty(Title))
-        //    {
-        //        if (Title.Length > adjustedWidth)
-        //            adjustedText = Title[..^(Title.Length - adjustedWidth)];
-        //        else
-        //            adjustedText = Title;
-        //    }
-        //
-        //    if (!string.IsNullOrEmpty(adjustedText))
-        //    {
-        //        TitleAreaLength = adjustedText.Length;
-        //
-        //        if (TitleAlignment == HorizontalAlignment.Left)
-        //            TitleAreaX = 1;
-        //        else if (TitleAlignment == HorizontalAlignment.Center)
-        //            TitleAreaX = ((adjustedWidth - adjustedText.Length) / 2) + 1;
-        //        else
-        //            TitleAreaX = Width - 1 - adjustedText.Length;
-        //
-        //        Surface.Print(TitleAreaX, TitleAreaY, adjustedText, Color.Yellow);
-        //    }
-        //
-        //    IsDirty = true;
-        //}
 
         public void ToggleDebugConsole()
         {
@@ -132,11 +85,9 @@ namespace Halacint
                 HideDebugConsole();
                 return true;
             }
-            
+
             return _log.ProcessKeyboard(keyboard);
         }
-
-        
 
         public override void Update(TimeSpan delta)
         {
@@ -165,6 +116,7 @@ namespace Halacint
                 // Reset the shift amount.
                 _log.TimesShiftedUp = 0;
             }
+
         }
 
         

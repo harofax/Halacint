@@ -14,11 +14,15 @@ using Console = SadConsole.Console;
 
 namespace Halacint
 {
-    internal class DebugConsole : Console
+    internal class DebugLog : Console
     {
         private readonly ClassicConsoleKeyboardHandler _keyboardHandler;
 
-        public DebugConsole(int width, int height, int bufferHeight) : base(width - 1, height, width - 1, bufferHeight)
+        public delegate void NotifyConsoleCleared();
+
+        public event NotifyConsoleCleared ConsoleCleared;
+
+        public DebugLog(int width, int height, int bufferHeight) : base(width - 1, height, width - 1, bufferHeight)
         {
             this.DefaultBackground = Color.AnsiBlack;
             this.Clear();
@@ -43,6 +47,12 @@ namespace Halacint
             this.Clear();
             Cursor.Position = new Point(0, 0);
             _keyboardHandler.CursorLastY = 0;
+            OnConsoleCleared();
+        }
+
+        protected virtual void OnConsoleCleared()
+        {
+            ConsoleCleared?.Invoke();
         }
 
         public void EnterPressedAction(ClassicConsoleKeyboardHandler keyboardComponent, Cursor cursor, string value)
