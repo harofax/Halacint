@@ -27,7 +27,7 @@ namespace Halacint
 
         public RootScreen()
         {
-            ColoredGlyph playerGlyph = new ColoredGlyph(Color.CornflowerBlue, Color.Transparent, '@');
+            ColoredGlyph playerGlyph = new ColoredGlyph(Color.Crimson, Color.Transparent, '@');
             _player = new Entity(playerGlyph, 50)
             {
                 Position = new Point(2, 2)
@@ -68,40 +68,65 @@ namespace Halacint
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
             bool playerMoved = false;
+
+            // 0 -> vertical
+            // 1 -> horizontal
             Direction moveDir = Direction.None;
 
-            if (keyboard.IsKeyPressed(Keys.Up))
+            if (keyboard.IsKeyPressed(Keys.W))
             {
-                GameLoop.Debug.Log("holy crap u walked up wtffffffffffff ", Color.Blue, Color.Red);
                 moveDir = Direction.Up;
                 playerMoved = true;
             }
-            else if (keyboard.IsKeyPressed(Keys.Down))
+            else if (keyboard.IsKeyPressed(Keys.S))
             {
                 moveDir = Direction.Down;
                 playerMoved = true;
             }
 
-            if (keyboard.IsKeyPressed(Keys.Left))
+            if (keyboard.IsKeyPressed(Keys.A))
             {
                 moveDir = Direction.Left;
                 playerMoved = true;
             }
-            else if (keyboard.IsKeyPressed(Keys.Right))
+            else if (keyboard.IsKeyPressed(Keys.D))
             {
-                GameLoop.Debug.Log("omg u walked right no friggin way", Color.Orange);
                 moveDir = Direction.Right;
                 playerMoved = true;
             }
 
+            if (keyboard.IsKeyPressed(Keys.E))
+            {
+                moveDir = Direction.UpRight;
+                playerMoved = true;
+            }
+
             if (keyboard.IsKeyPressed(Keys.Q))
+            {
+                moveDir = Direction.UpLeft;
+                playerMoved = true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.Z))
+            {
+                moveDir = Direction.DownLeft;
+                playerMoved = true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.C))
+            {
+                moveDir = Direction.DownRight;
+                playerMoved = true;
+            }
+
+            if (keyboard.IsKeyPressed(Keys.F))
             {
                 _cam.Target = _player;
                 _cam.UpdateCameraPos();
                 return true;
             }
 
-            if (keyboard.IsKeyPressed(Keys.E))
+            if (keyboard.IsKeyPressed(Keys.G))
             {
                 _cam.TargetPoint = _cam.Surface.Area.Center;
                 _cam.UpdateCameraPos();
@@ -111,20 +136,39 @@ namespace Halacint
             if (keyboard.IsKeyPressed(Keys.K))
             {
                 GameLoop.Debug.ShowDebugConsole();
-                //_debugWindow.ToggleDebugConsole();
                 return true;
             }
 
             if (!playerMoved) return false;
 
             Point newPos = _player.Position + moveDir;
-            if (_world.cells.Area.Contains(newPos))
+            if (_world.cells.Area.Contains(newPos) && _world.IsWalkable(newPos.X, newPos.Y) == 0)
             {
                 _player.Position = newPos;
-                Point glyph = (3, 1); // glyph.ToIndex(16)
+                Point glyph = (12, 1); // glyph.ToIndex(16)
                 ColoredGlyph worldTile = _world.cells.GetCellAppearance(_player.Position.X, _player.Position.Y);
-                ColoredGlyph footstep = new ColoredGlyph(worldTile.Foreground * 0.95f, worldTile.Background *0.98f, '_');
-                _world.cells.SetGlyph(_player.Position.X, _player.Position.Y, footstep);
+                ColoredGlyph footstep = new ColoredGlyph(
+                    worldTile.Foreground * 0.95f, 
+                    worldTile.Background *0.98f,
+                    ','); //glyph.ToIndex(16)
+
+                Mirror mirrormode = Mirror.None;
+
+                for (int i = 0; i < 2; i++)
+                {
+                    int rng_mirror = Game.Instance.Random.Next(0, 2);
+
+                    if (rng_mirror == 0)
+                    {
+                        mirrormode |= Mirror.Horizontal;
+                    }
+                    else if (rng_mirror == 1)
+                    {
+                        mirrormode |= Mirror.Vertical;
+                    }
+                }
+                
+                _world.cells.SetGlyph(_player.Position.X, _player.Position.Y, footstep.Glyph, footstep.Foreground, footstep.Background, mirrormode);
             }
 
             return playerMoved;
