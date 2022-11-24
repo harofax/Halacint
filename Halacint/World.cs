@@ -6,9 +6,14 @@ namespace Halacint
     internal class World
     {
         public CellSurface cells;
+        private byte[,] walkable;
         public World(int width, int height) 
         {
             cells = new CellSurface(width, height);
+            walkable = new byte[width, height];
+
+            System.Console.WriteLine(walkable[1, 1]);
+
             GenerateWorld();
             //MorphWorld();
         }

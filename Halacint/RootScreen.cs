@@ -27,7 +27,7 @@ namespace Halacint
 
         public RootScreen()
         {
-            ColoredGlyph playerGlyph = new ColoredGlyph(Color.Yellow, Color.Transparent, '@');
+            ColoredGlyph playerGlyph = new ColoredGlyph(Color.CornflowerBlue, Color.Transparent, '@');
             _player = new Entity(playerGlyph, 50)
             {
                 Position = new Point(2, 2)
@@ -113,12 +113,16 @@ namespace Halacint
                 return true;
             }
 
+            if (!playerMoved) return false;
+
             Point newPos = _player.Position + moveDir;
             if (_world.cells.Area.Contains(newPos))
             {
-                Point glyph = (3, 1); // glyph.ToIndex(16)
-                _world.cells.SetGlyph(_player.Position.X, _player.Position.Y, ',', Color.PaleGoldenrod);
                 _player.Position = newPos;
+                Point glyph = (3, 1); // glyph.ToIndex(16)
+                ColoredGlyph worldTile = _world.cells.GetCellAppearance(_player.Position.X, _player.Position.Y);
+                ColoredGlyph footstep = new ColoredGlyph(worldTile.Foreground * 0.95f, worldTile.Background *0.98f, '_');
+                _world.cells.SetGlyph(_player.Position.X, _player.Position.Y, footstep);
             }
 
             return playerMoved;
