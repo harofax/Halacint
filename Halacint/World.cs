@@ -19,7 +19,7 @@ namespace Halacint
             {
                 for (int y = 0; y < cells.Height; y++)
                 {
-                    var cell_appearance = new ColoredGlyph(Color.SandyBrown, Color.SaddleBrown, '=');
+                    var cell_appearance = new ColoredGlyph(Color.PaleGoldenrod, Color.SandyBrown, '"');
                     cells[x, y].CopyAppearanceFrom(cell_appearance);
                 }
             }

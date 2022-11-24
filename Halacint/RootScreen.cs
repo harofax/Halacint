@@ -12,13 +12,12 @@ namespace Halacint
 {
     public class RootScreen : ScreenObject
     {
-        private DebugWindow _debugWindow;
-        private World world;
+        private readonly DebugWindow _debugWindow;
+        private readonly World _world;
         private UIManager UIManager;
-        private Manager entityManager;
-        private GameObject _controlledObject;
-        private Camera cam;
-        private Entity player;
+        private readonly Manager _entityManager;
+        private readonly Camera _cam;
+        private readonly Entity _player;
 
         public const int WORLD_SIZE_X = 200;
         public const int WORLD_SIZE_Y = 200;
@@ -29,93 +28,82 @@ namespace Halacint
         public RootScreen()
         {
             ColoredGlyph playerGlyph = new ColoredGlyph(Color.Yellow, Color.Transparent, '@');
-            player = new Entity( playerGlyph, 50)
+            _player = new Entity(playerGlyph, 50)
             {
                 Position = new Point(2, 2)
             };
 
             // -------- WORLD ---------
-            world = new World( WORLD_SIZE_X, WORLD_SIZE_Y);
-            
+            _world = new World(WORLD_SIZE_X, WORLD_SIZE_Y);
+
             // -------- CAMERA --------
-            cam = new Camera(ref world, CAM_SIZE_X, CAM_SIZE_Y);
-            cam.Position = (1,1);
-            cam.Target = player;
-            cam.FollowTarget = true;
-            
+            _cam = new Camera(ref _world, CAM_SIZE_X, CAM_SIZE_Y);
+            _cam.Position = (1, 1);
+            _cam.Target = _player;
+            _cam.FollowTarget = true;
+
 
             // -------- STATUS CONSOLE --------
             Console statusConsole = new Console(Game.Instance.ScreenCellsX - CAM_SIZE_X - 3, 30);
             statusConsole.Position = (CAM_SIZE_X + 2, 1);
             statusConsole.FillWithRandomGarbage(255);
 
-            entityManager = new Manager();
-            cam.SadComponents.Add(entityManager);
-            entityManager.Add(player);
+            _entityManager = new Manager();
+            _cam.SadComponents.Add(_entityManager);
+            _entityManager.Add(_player);
 
             // -------- DEBUG CONSOLE ---------
             _debugWindow = new DebugWindow(50, Game.Instance.ScreenCellsY - 10);
-            _debugWindow.Position = (1,1);
+            _debugWindow.Position = (1, 1);
 
             Children.Add(statusConsole);
-            Children.Add(cam);
-            Children.Add(player);
+            Children.Add(_cam);
+            Children.Add(_player);
             Children.Add(_debugWindow);
             Children.MoveToTop(statusConsole);
             //Children.MoveToTop(cam);
-            Children.MoveToTop(player);
+            Children.MoveToTop(_player);
         }
 
         public override bool ProcessKeyboard(Keyboard keyboard)
         {
-            bool handled = false;
-            Point newPosition = (0, 0);
+            bool playerMoved = false;
+            Direction moveDir = Direction.None;
 
             if (keyboard.IsKeyPressed(Keys.Up))
             {
-                //_controlledObject.Move(_controlledObject.Position + Direction.Up, world);
-                newPosition = player.Position + (Direction.Up);
-                handled = true;
+                moveDir = Direction.Up;
+                playerMoved = true;
             }
             else if (keyboard.IsKeyPressed(Keys.Down))
             {
-                //_controlledObject.Move(_controlledObject.Position + Direction.Down, world);
-                newPosition = player.Position + (Direction.Down);
-                handled = true;
+                moveDir = Direction.Down;
+                playerMoved = true;
             }
-            
+
             if (keyboard.IsKeyPressed(Keys.Left))
             {
-                //_controlledObject.Move(_controlledObject.Position + Direction.Left, world);
-                newPosition = player.Position + (Direction.Left);
-                handled = true;
+                moveDir = Direction.Left;
+                playerMoved = true;
             }
             else if (keyboard.IsKeyPressed(Keys.Right))
             {
-                //_controlledObject.Move(_controlledObject.Position + Direction.Right, world);
-                newPosition = player.Position + (Direction.Right);
-                handled = true;
+                moveDir = Direction.Right;
+                playerMoved = true;
             }
 
             if (keyboard.IsKeyPressed(Keys.Q))
             {
-                //this.IsFocused = true;
-                //FillBackground();
-                //_debug.IsVisible = true;
-                cam.Target = player;
-                cam.SetCameraPos();
-                newPosition = player.Position;
-                handled = true;
+                _cam.Target = _player;
+                _cam.UpdateCameraPos();
+                return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.E))
             {
-                //this.IsFocused = true;
-                //FillBackground();
-                //_debug.IsVisible = true;
-                //cam.TargetPoint = cam.Surface.Area.Center;
-                newPosition = player.Position;
-                handled = true;
+                _cam.TargetPoint = _cam.Surface.Area.Center;
+                _cam.UpdateCameraPos();
+                return true;
             }
 
             if (keyboard.IsKeyPressed(Keys.K))
@@ -125,19 +113,15 @@ namespace Halacint
                 return true;
             }
 
-            if (handled)
+            Point newPos = _player.Position + moveDir;
+            if (_world.cells.Area.Contains(newPos))
             {
-                if (world.cells.Area.Contains(newPosition))
-                {
-                    world.cells.SetGlyph(player.Position.X, player.Position.Y, 250, Color.Purple);
-                    player.Position = newPosition;
-                    //cam.Surface.View = cam.Surface.Area.WithCenter(newPosition);
-                    //cam.displaySurface.Surface.View = cam.displaySurface.Surface.Area.WithCenter(newPosition);
-                    cam.IsDirty = true;
-                }
+                Point glyph = (3, 1); // glyph.ToIndex(16)
+                _world.cells.SetGlyph(_player.Position.X, _player.Position.Y, ',', Color.PaleGoldenrod);
+                _player.Position = newPos;
             }
 
-            return handled;
+            return playerMoved;
         }
 
 
@@ -147,7 +131,7 @@ namespace Halacint
             base.Update(delta);
         }
 
-       
+
 
         //private void FillBackground()
         //{

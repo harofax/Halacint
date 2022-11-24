@@ -60,7 +60,7 @@ namespace Halacint
             DisplaySurface = this;
         }
 
-        public void SetCameraPos()
+        public void UpdateCameraPos()
         {
             Entity ent = (Entity)Target;
             Surface.View = Surface.View.WithCenter(ent.AbsolutePosition);
